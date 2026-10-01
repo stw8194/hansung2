@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.local
+
+# Local database scripts and setup notes
+/supabase/
 
 # Editor directories and files
 .vscode/*
