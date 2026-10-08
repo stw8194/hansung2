@@ -14,6 +14,12 @@ function getStoredToken() {
   return window.localStorage.getItem(SESSION_KEY);
 }
 
+export const getSessionToken = getStoredToken;
+
+export function notifyAuthChange() {
+  window.dispatchEvent(new Event(AUTH_EVENT));
+}
+
 function saveToken(token: string | null) {
   if (token) window.localStorage.setItem(SESSION_KEY, token);
   else window.localStorage.removeItem(SESSION_KEY);
@@ -64,6 +70,7 @@ export async function signOut() {
   const token = getStoredToken();
   if (token) await supabase.rpc("logout_user", { candidate_token: token });
   saveToken(null);
+  window.sessionStorage.removeItem("hri-consultation");
 }
 
 export function subscribeAuth(listener: () => void) {

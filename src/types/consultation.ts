@@ -1,6 +1,7 @@
 export type ConsultationCategory = "skin" | "hair" | "makeup";
 
 export type ConsultationState = {
+  historyId?: string;
   category: ConsultationCategory | null;
   answers: Record<string, string>;
 };

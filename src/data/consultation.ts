@@ -9,6 +9,7 @@ export const categoryDetails: Record<
   {
     number: string;
     title: string;
+    consultationLabel: string;
     description: string;
     icon: ConsultationCategory;
   }
@@ -16,18 +17,21 @@ export const categoryDetails: Record<
   skin: {
     number: "01",
     title: "피부 고민",
+    consultationLabel: "피부가 고민이에요",
     description: "수분/진정, 트러블/모공, 선케어/클렌징",
     icon: "skin",
   },
   hair: {
     number: "02",
     title: "헤어 고민",
+    consultationLabel: "헤어가 고민이에요",
     description: "두피, 탈모, 손상모, 스타일링",
     icon: "hair",
   },
   makeup: {
     number: "03",
     title: "메이크업 고민",
+    consultationLabel: "메이크업 제품을 찾고 있어요",
     description: "베이스, 포인트/커버, 메이크업 도구",
     icon: "makeup",
   },
@@ -53,7 +57,7 @@ const firstQuestions: Record<ConsultationCategory, ConsultationQuestion> = {
   },
   hair: {
     id: "productType",
-    title: "어떤 헤어 제품을 찾으시나요?",
+    title: "어떤 목적으로 제품을 찾고 계세요?",
     description: "관리 목적에 가장 가까운 항목을 선택해주세요.",
     options: [
       option("care", "케어 제품", "두피와 모발을 건강하게 관리"),
@@ -205,7 +209,7 @@ export function getConsultationQuestions(
     if (productType === "care") {
       questions.push({
         id: "detail",
-        title: "어떤 제품을 찾으시나요?",
+        title: "먼저 필요한 제품 형태를 알려주세요.",
         options: [
           option("shampoo", "샴푸 제품"),
           option("treatment", "트리트먼트 제품"),
@@ -216,7 +220,7 @@ export function getConsultationQuestions(
       if (state.answers.detail)
         questions.push({
           id: "concern",
-          title: "어떤 헤어 제품을 찾으시나요?",
+          title: "가장 필요한 관리 방향은 무엇인가요?",
           options: [
             option("scalp", "두피 케어 제품"),
             option("damage", "모발 케어 제품"),
@@ -228,7 +232,7 @@ export function getConsultationQuestions(
     if (productType === "styling") {
       questions.push({
         id: "detail",
-        title: "어떤 스타일링 제품을 찾으시나요?",
+        title: "원하시는 스타일링 방식은 어느 쪽에 가까운가요?",
         options: [
           option("hard", "고정(하드) 제품", "스타일을 단단하게 유지"),
           option("soft", "연출(소프트) 제품", "자연스러운 결감과 윤기"),
@@ -288,4 +292,39 @@ export function isConsultationComplete(state: ConsultationState) {
   if (!state.category) return false;
   const questions = getConsultationQuestions(state);
   return questions.length > 1 && questions.every((question) => Boolean(state.answers[question.id]));
+}
+
+const categoryAcknowledgements: Record<ConsultationCategory, string> = {
+  skin: "피부 고민이 있으시군요. 조금 더 자세히 알아볼게요.",
+  hair: "헤어 관련 제품을 찾고 계시는군요. 목적에 맞게 함께 좁혀볼게요.",
+  makeup: "메이크업 제품을 찾고 계시는군요. 원하는 표현부터 확인해볼게요.",
+};
+
+const answerAcknowledgements: Record<string, string> = {
+  "skin.productType.hydration": "수분과 진정 관리가 필요하시군요. 선호하는 제품 타입도 확인해볼게요.",
+  "skin.productType.trouble": "트러블과 모공 관리가 필요하시군요. 가장 신경 쓰이는 부분을 알려주세요.",
+  "skin.productType.sunClean": "선케어와 클렌징 제품을 찾고 계시는군요. 필요한 용도를 조금 더 확인해볼게요.",
+  "hair.productType.care": "두피와 모발을 관리할 제품이 필요하시군요. 먼저 제품 형태를 골라볼게요.",
+  "hair.productType.styling": "스타일링을 위한 제품을 찾고 계시는군요. 원하는 연출 방식을 확인해볼게요.",
+  "hair.productType.device": "스타일링 기기를 찾고 계시는군요. 필요한 기능에 가까운 것을 알려주세요.",
+  "hair.detail.shampoo": "샴푸 형태를 선호하시는군요. 가장 필요한 관리 방향도 확인할게요.",
+  "hair.detail.treatment": "트리트먼트 제품을 찾고 계시는군요. 집중하고 싶은 관리를 알려주세요.",
+  "hair.detail.sprayCare": "간편한 분사형 제품을 찾고 계시는군요. 어떤 관리가 필요한지 확인할게요.",
+  "hair.detail.leaveIn": "바르는 타입의 제품을 찾고 계시는군요. 관리 목적을 조금 더 알려주세요.",
+  "hair.detail.hard": "고정력이 필요한 스타일링이군요. 선호하는 사용 방식을 골라주세요.",
+  "hair.detail.soft": "자연스러운 연출을 원하시는군요. 원하는 제형에 가까운 것을 알려주세요.",
+  "makeup.productType.base": "자연스러운 피부 표현을 위한 제품이군요. 가장 신경 쓰이는 부분을 알려주세요.",
+  "makeup.productType.point": "필요한 부분을 자연스럽게 보완하고 싶으시군요. 어느 부분인지 확인해볼게요.",
+  "makeup.productType.tool": "메이크업을 더 쉽게 도와줄 도구가 필요하시군요. 사용 목적을 알려주세요.",
+};
+
+export function getConsultationAcknowledgement(state: ConsultationState, currentIndex: number) {
+  if (!state.category) return "안녕하세요. 고민에 맞는 제품을 함께 찾아볼게요.";
+  if (currentIndex === 0) return categoryAcknowledgements[state.category];
+  const questions = getConsultationQuestions(state);
+  const previousQuestion = questions[currentIndex - 1];
+  const previousValue = previousQuestion ? state.answers[previousQuestion.id] : null;
+  if (!previousQuestion || !previousValue) return categoryAcknowledgements[state.category];
+  return answerAcknowledgements[`${state.category}.${previousQuestion.id}.${previousValue}`]
+    ?? "선택해주신 내용을 확인했어요. 조금 더 자세히 알아볼게요.";
 }

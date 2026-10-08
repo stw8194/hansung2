@@ -11,7 +11,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const routeState = location.state as LoginState;
-  const destination = routeState?.from?.startsWith("/") ? routeState.from : "/";
+  const destination = routeState?.from?.startsWith("/") && !routeState.from.startsWith("//") && routeState.from !== "/login" ? routeState.from : "/my";
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
@@ -97,7 +97,7 @@ export default function Login() {
       if (target === "loginId") setLoginIdCheck("idle");
       else setNicknameCheck("idle");
       setError(
-        "중복확인을 완료하지 못했습니다. 최신 DB SQL을 적용했는지 확인해 주세요.",
+        "중복확인을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.",
       );
       return;
     }
@@ -112,24 +112,24 @@ export default function Login() {
   };
 
   return (
-    <main className="grid flex-1 place-items-center bg-[#f7f9fc] px-4 py-14 text-left">
-      <section className="w-full max-w-[430px] rounded-2xl border border-[#e3e8ef] bg-white px-9 py-9 shadow-[0_18px_55px_rgba(15,23,42,0.08)] max-[520px]:px-6">
+    <main className="page-body">
+      <section>
         <Link
-          className="text-[13px] font-bold text-[#7a8595] no-underline hover:text-[#1859dc]"
+          className="app-button"
           to="/"
         >
           ← 홈으로
         </Link>
-        <h1 className="mt-7 text-[30px] font-black tracking-[-0.04em] text-[#172033]">
+        <h1 className="page-title">
           {mode === "login" ? "로그인" : "회원가입"}
         </h1>
-        <p className="mt-2 text-[13px] text-[#8b95a4]">
+        <p className="page-copy subtle">
           {mode === "login"
             ? "로그인하고 맞춤 서비스를 이용해 보세요."
             : "서비스에서 사용할 계정을 만들어 주세요."}
         </p>
 
-        <div className="mt-7 grid grid-cols-2 rounded-lg bg-[#f2f5f8] p-1">
+        <div className="my-4 grid grid-cols-2 gap-2">
           <ModeButton
             active={mode === "login"}
             onClick={() => changeMode("login")}
@@ -144,7 +144,7 @@ export default function Login() {
           </ModeButton>
         </div>
 
-        <form className="mt-6 grid gap-5" onSubmit={submit}>
+        <form className="app-form" onSubmit={submit}>
           <Field label="아이디">
             {mode === "signup" ? (
               <CheckControl
@@ -214,7 +214,7 @@ export default function Login() {
                 onChange={(event) => setPassword(event.target.value)}
               />
               <button
-                className="absolute top-1/2 right-3 grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-md border-0 bg-transparent text-[#8b95a4] hover:bg-[#f2f5f8] hover:text-[#1859dc]"
+                className="absolute top-1/2 right-1 grid size-11 -translate-y-1/2 place-items-center border-0 bg-transparent text-[#667085]"
                 type="button"
                 aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
                 aria-pressed={showPassword}
@@ -225,10 +225,10 @@ export default function Login() {
             </div>
           </Field>
           {error && (
-            <p className="text-[13px] font-semibold text-red-500">{error}</p>
+            <p className="error-message" role="alert">{error}</p>
           )}
           <button
-            className="mt-1 h-12 cursor-pointer rounded-lg border-0 bg-[#1859dc] text-[14px] font-bold text-white transition hover:bg-[#1049bd] disabled:cursor-not-allowed disabled:opacity-50"
+            className="app-button primary"
             disabled={submitting}
             type="submit"
           >
@@ -245,7 +245,7 @@ export default function Login() {
 }
 
 const inputClass =
-  "h-12 w-full rounded-lg border border-[#dfe5ec] px-3.5 text-[14px] text-[#263143] outline-none transition placeholder:text-[#b1b8c2] focus:border-[#1859dc]";
+  "app-input";
 
 function isValidLoginId(loginId: string) {
   return /^[A-Za-z0-9_]{4,20}$/.test(loginId.trim());
@@ -282,7 +282,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="grid gap-2 text-[12px] font-bold text-[#596678]">
+    <label>
       <span>{label}</span>
       {children}
     </label>
@@ -300,8 +300,9 @@ function ModeButton({
 }) {
   return (
     <button
-      className={`h-9 cursor-pointer rounded-md border-0 text-[13px] font-bold transition ${active ? "bg-white text-[#172033] shadow-sm" : "bg-transparent text-[#8b95a4]"}`}
+      className={`app-button ${active ? "selected" : ""}`}
       type="button"
+      aria-pressed={active}
       onClick={onClick}
     >
       {children}
@@ -323,7 +324,7 @@ function CheckControl({
       <div className="flex gap-2">
         <div className="min-w-0 flex-1">{input}</div>
         <button
-          className="w-[82px] shrink-0 cursor-pointer rounded-lg border border-[#d7dee7] bg-white text-[12px] font-bold text-[#536072] hover:border-[#1859dc] hover:text-[#1859dc] disabled:cursor-wait disabled:opacity-60"
+          className="app-button w-[82px] shrink-0 subtle"
           disabled={check === "checking"}
           type="button"
           onClick={onCheck}

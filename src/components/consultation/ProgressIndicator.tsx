@@ -8,8 +8,7 @@ export default function ProgressIndicator({
   const percent = Math.max(0, Math.min(100, (current / total) * 100));
   return (
     <div aria-label={`상담 진행 ${current}/${total}`}>
-      <div className="flex items-center justify-between text-[11px] font-bold">
-        <span className="text-[#1f5ed7]">AI 상담순서</span>
+      <div className="flex items-center justify-end text-[11px] font-bold">
         <span className="text-[#8490a1]">
           {current} / {total}
         </span>

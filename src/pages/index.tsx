@@ -1,6 +1,6 @@
+import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Header from "../components/header";
-import BottomNavigation from "../components/layout/BottomNavigation";
 import Home from "./Home";
 import Consulting from "./Consulting";
 import VideoDetail from "./Consulting/VideoDetail";
@@ -8,6 +8,7 @@ import Ai from "./Ai";
 import Login from "./Login";
 import ConsultationWizard from "./ConsultationWizard";
 import Recommendations from "./Recommendations";
+import Member from "./Member";
 
 export default function Router() {
   return (
@@ -19,11 +20,10 @@ export default function Router() {
 
 function AppRoutes() {
   const location = useLocation();
-  const isConsultation = /^\/consult\/(skin|hair|makeup)$/.test(location.pathname);
-  const headerClass = isConsultation ? "max-sm:hidden" : location.pathname === "/" ? "max-md:hidden" : "";
+  useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
   return (
-    <div className="mx-auto flex min-h-dvh max-w-full flex-col bg-white font-sans text-base leading-[145%] tracking-[0.18px] text-[#667085] antialiased">
-      <Header className={headerClass} />
+    <div className="app-shell antialiased">
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/consult" element={<Ai />} />
@@ -35,9 +35,13 @@ function AppRoutes() {
         <Route path="/consulting" element={<Navigate replace to="/videos" />} />
         <Route path="/consulting/:id" element={<VideoDetail />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/my" element={<Member />} />
+        <Route path="/my/profile" element={<Member />} />
+        <Route path="/my/history" element={<Member />} />
+        <Route path="/my/saved" element={<Member />} />
+        <Route path="/my/settings" element={<Member />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
-      {!isConsultation && location.pathname !== "/" && <BottomNavigation />}
     </div>
   );
 }
